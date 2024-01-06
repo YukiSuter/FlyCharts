@@ -1,5 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdfx/pdfx.dart';
+import 'package:http/http.dart' as http;
+import 'package:internet_file/internet_file.dart';
 
 import 'package:flutter/material.dart';
 import 'charts/chartMaps.dart' as cm;
@@ -108,6 +113,20 @@ class _ChartsPageState extends State<ChartsPage> {
   bool choicesActive = false;
   bool selectedActive = false;
 
+  double choicesSize = 300;
+  Icon choicesIcon = Icon(Icons.arrow_back_ios_new);
+
+  String tempPath = "";
+
+
+  var pdfPinchController = PdfControllerPinch(
+    document: PdfDocument.openAsset('assets/sample.pdf'),
+  );
+
+  var pdfController = PdfController(
+    document: PdfDocument.openAsset('assets/sample.pdf'),
+  );
+
   Color chartsCloseColor = Themes[activeTheme]["chartsClose"];
 
   int maxCAC = 1;
@@ -143,6 +162,42 @@ class _ChartsPageState extends State<ChartsPage> {
     setState(() {
 
     });
+  }
+
+  Future<void> _openChart(index) async {
+    selectedOptionIndex = index;
+    _setPDF(widget.charts[chartTypeList[selectedTypeIndex]][chartOptionList[selectedOptionIndex]]["link"]);
+
+  }
+
+  Future<void> _setPDF(link) async {
+    //
+    // Directory tempDir = await getTemporaryDirectory();
+    // final dirExists = await tempDir.exists();
+    // if (!dirExists) {
+    //   await tempDir.create();
+    // }
+    //
+    // String tempPath = tempDir.path;
+    //
+    // final pdfFile = File('$tempPath/tempchart.pdf');
+    //
+    //
+    // final pdfResponse = await http.get(Uri.parse(link));
+    //
+    //
+    // await pdfFile.writeAsBytes(pdfResponse.bodyBytes);
+
+    if (Platform.isIOS || Platform.isAndroid) {
+      pdfPinchController.loadDocument(PdfDocument.openData(InternetFile.get(link)));
+    } else {
+      pdfController.loadDocument(PdfDocument.openData(InternetFile.get(link)));
+    }
+
+
+    // setState(() {
+    //
+    // });
   }
 
   Future<void> _setChartOptionButton(index, status) async {
@@ -247,61 +302,65 @@ class _ChartsPageState extends State<ChartsPage> {
                         })
                     )
                 ),
-                Container(
-                  width: 300,
-                  height: MediaQuery.of(context).size.height,
-                  padding: EdgeInsets.all(3),
-                  color: chartOptionContainerColor,
-                  child: Builder(
-                    builder: (context) {
-                      if (!choicesActive) {
-                        return Container(
-                          padding: EdgeInsets.all(7),
-                          child: Text("No chart type selected! Please choose from the column on the left."),
-                          alignment: Alignment.center,
-                        );
-                      } else {
-                        return Container(
-                          color: Themes[activeTheme]["background"],
-                          width: double.infinity,
-                          height: double.infinity,
-                          child: ListView.separated(
-                            padding: EdgeInsets.all(5),
-                            scrollDirection: Axis.vertical,
-                            itemCount: chartOptionList.length,
-                            separatorBuilder: (BuildContext context, int index) => const Divider(),
-                            itemBuilder: (BuildContext context, int index) {
-                              return MouseRegion(
-                                child: GestureDetector(
-                                  child: Container(
-                                    color: chartOptionButtonColors[chartOptionList[index]],
-                                    padding: EdgeInsets.all(5),
-                                    alignment: Alignment.centerLeft,
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          chartOptionList[index],
-                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                      width: choicesSize,
+                      height: MediaQuery.of(context).size.height,
+                      padding: EdgeInsets.all(3),
+                      color: chartOptionContainerColor,
+                      child: Builder(
+                        builder: (context) {
+                          if (!choicesActive) {
+                            return Container(
+                              padding: EdgeInsets.all(7),
+                              child: Text("No chart type selected! Please choose from the column on the left."),
+                              alignment: Alignment.center,
+                            );
+                          } else {
+                            return Container(
+                              color: Themes[activeTheme]["background"],
+                              width: double.infinity,
+                              height: double.infinity,
+                              child: ListView.separated(
+                                  padding: EdgeInsets.all(5),
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: chartOptionList.length,
+                                  separatorBuilder: (BuildContext context, int index) => const Divider(),
+                                  itemBuilder: (BuildContext context, int index) {
+                                    return MouseRegion(
+                                      child: GestureDetector(
+                                        child: Container(
+                                            color: chartOptionButtonColors[chartOptionList[index]],
+                                            padding: EdgeInsets.all(5),
+                                            alignment: Alignment.centerLeft,
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  chartOptionList[index],
+                                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                ),
+                                                Text(
+                                                    widget.charts[chartTypeList[selectedTypeIndex]][chartOptionList[index]]["detail"]
+                                                )
+                                              ],
+                                            )
                                         ),
-                                        Text(
-                                          widget.charts[chartTypeList[selectedTypeIndex]][chartOptionList[index]]["detail"]
-                                        )
-                                      ],
-                                    )
-                                  ),
-                                  // onTap: () => _loadCharts(chartTypeList[index]),
-                                  onTapDown: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "normal");}}),
-                                  onTapUp: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "hover");}}),
-                                ),
-                                onEnter: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "hover");}}),
-                                onExit: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "normal");}}),
-                              );
-                            }
-                          ),
-                        );
-                      }
-                    },
-                  )
+                                        onTap: () => _openChart(index),
+                                        onTapDown: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "normal");}}),
+                                        onTapUp: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "hover");}}),
+                                      ),
+                                      onEnter: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "hover");}}),
+                                      onExit: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "normal");}}),
+                                    );
+                                  }
+                              ),
+                            );
+                          }
+                        },
+
+                      )
+                  ),
                 ),
                 MouseRegion(
                   child: GestureDetector(
@@ -310,9 +369,12 @@ class _ChartsPageState extends State<ChartsPage> {
                       height: MediaQuery.of(context).size.height,
                       padding: EdgeInsets.all(5),
                       color: chartsCloseColor,
-                      child: Icon(Icons.arrow_back_ios_new),
+                      child: choicesIcon,
                     ),
-                    onTap: () => print("Hi"),
+                    onTap: () => setState(() {
+                      choicesIcon = choicesSize == 300? Icon(Icons.arrow_forward_ios) : Icon(Icons.arrow_back_ios_new);
+                      choicesSize = choicesSize == 300? 0 : 300;
+                    }),
                     onTapDown: (s) => setState(() {chartsCloseColor = Themes[activeTheme]["chartsClose_hover"];}),
                     onTapUp: (s) => setState(() {chartsCloseColor = Themes[activeTheme]["chartsClose"];}),
                   ),
@@ -320,9 +382,42 @@ class _ChartsPageState extends State<ChartsPage> {
                   onExit: (s) => setState(() {chartsCloseColor = Themes[activeTheme]["chartsClose"];}),
                 ),
                 Expanded(
-                  child: Container(
-                    color: Themes[activeTheme]!["background"],
-                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(5),
+                        color: Colors.pink,
+                        alignment: Alignment.center,
+                        child: Text("Click here to open in another program!")
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: Themes[activeTheme]!["background"],
+                          child: Builder(
+                              builder: (context) {
+                                if (Platform.isIOS || Platform.isAndroid) {
+                                  return PdfViewPinch(
+                                    controller: pdfPinchController,
+                                  );
+                                } else {
+                                  return PdfView(
+                                    controller: pdfController,
+                                  );
+                                }
+                              }
+                          )
+                        )
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(5),
+                        height: 15,
+                        width: double.infinity,
+                        child: Text(
+                          "FOR SIMULATION PURPOSES ONLY!"
+                        )
+                      )
+                    ],
+                  )
                 )
               ],
             )

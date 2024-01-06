@@ -4,12 +4,14 @@ import 'package:http/http.dart' as http;
 String link_root = "https://nats-uk.ead-it.com/cms-nats/opencms/en/Publications/AIP/Current-AIRAC/html/eAIP/EG-AD-2.";
 String link_suffix = "-en-GB.html";
 
+String file_root = "https://nats-uk.ead-it.com/cms-nats/export/sites/default/en/Publications/AIP/Current-AIRAC/";
+
 EG(airfield) async {
   print("SEARCHING FOR UK AERODROME USING API");
   String eAIP = link_root + airfield + link_suffix;
   var ADName;
 
-  final response = await http.Client().get(Uri.parse(eAIP));
+  final response = await http.get(Uri.parse(eAIP));
 
   Map<String, Map<String, dynamic>> charts = {};
 
@@ -44,36 +46,51 @@ EG(airfield) async {
           if (code[0].toString() == "5" || code[0].toString() == "3" || code[0].toString() == "4") {
             if (charts.containsKey("GEN") == false) {
               charts.putIfAbsent("GEN", () => {});
-            } 
-            charts["GEN"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
+            }
+
+            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
+
+            charts["GEN"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
           }
 
           if (code[0].toString() == "2") {
             if (charts.containsKey("TAXI") == false) {
               charts.putIfAbsent("TAXI", () => {});
             }
-            charts["TAXI"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
+
+            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
+
+            charts["TAXI"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
           }
 
           if (code[0].toString() == "6") {
             if (charts.containsKey("SID") == false) {
               charts.putIfAbsent("SID", () => {});
             }
-            charts["SID"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
+
+            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
+
+            charts["SID"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
           }
 
           if (code[0].toString() == "7") {
             if (charts.containsKey("STAR") == false) {
               charts.putIfAbsent("STAR", () => {});
             }
-            charts["STAR"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
+
+            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
+
+            charts["STAR"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
           }
 
           if (code[0].toString() == "8") {
             if (charts.containsKey("APPR") == false) {
               charts.putIfAbsent("APPR", () => {});
             }
-            charts["APPR"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
+
+            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
+
+            charts["APPR"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
           }
 
 
