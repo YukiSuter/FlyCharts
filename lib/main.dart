@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'charts/chartMaps.dart' as cm;
@@ -18,6 +19,8 @@ const Map<String, dynamic> Themes = {
     "chartTypeButtons": Color(0xFF232323),
     "chartType_text": Colors.white,
     "chartTypeUnderlineColors": [Colors.teal, Colors.deepOrangeAccent, Colors.blue, Colors.purple, Colors.amber],
+    "chartChoiceBox": Color(0xFF262626),
+    "chartChoiceBox_hover": Color(0xFF1F1F1F),
     "appBar": Color(0xFF131313),
     "appBar_text": Colors.white,
     "background": Color(0xFF282828),
@@ -29,6 +32,28 @@ _launchURL(link) async {
   final Uri url = Uri.parse(link);
   if (!await launchUrl(url)) {
     throw Exception('Could not launch' + link);
+  }
+}
+
+class VertText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+
+  const VertText(this.text, this.style);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      width: 21,
+      child: Wrap(
+        runSpacing: 30,
+        direction: Axis.vertical,
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: text.split("").map((string) => Text(string, style: style)).toList(),
+      )
+    );
   }
 }
 
@@ -71,24 +96,70 @@ class ChartsPage extends StatefulWidget {
 }
 
 class _ChartsPageState extends State<ChartsPage> {
-  Map<String, bool> buttonColors = {};
+  Map<String, Color> chartTypeButtonColors = {};
+  Map<String, bool> chartOptionButtonColors = {};
+  late Color chartOptionContainerColor;
+  List<String> chartTypeList = [];
+  int selectedTypeIndex = 0;
+
+  int maxCAC = 1;
+  int CAC = 1;
 
   Future<void> _loadCharts(chartType) async {
     print("Showing: " + chartType);
-    print(buttonColors);
+    print(chartTypeButtonColors);
+    selectedTypeIndex = chartTypeList.indexOf(chartType);
+    print(Themes[activeTheme]!["chartTypeUnderlineColors"][selectedTypeIndex]);
+
+    for (String type in chartTypeList) {
+      if (type == chartType) {
+        chartTypeButtonColors[type] = Themes[activeTheme]!["chartTypeUnderlineColors"][selectedTypeIndex];
+      } else {
+        chartTypeButtonColors[type] = Themes[activeTheme]!["chartTypeButtons"];
+      }
+    }
+    setState(() {
+
+    });
+  }
+
+  Future<void> _setChartTypeButton(index, status) async {
+    if (status == "hover") {
+      chartTypeButtonColors[chartTypeList[index]] = Themes[activeTheme]!["chartTypeButtons_hover"];
+    } if (status == "active") {
+      chartTypeButtonColors[chartTypeList[index]] = Themes[activeTheme]!["chartTypeUnderlineColors"][selectedTypeIndex];
+    } if (status == "normal") {
+      chartTypeButtonColors[chartTypeList[index]] = Themes[activeTheme]!["chartTypeButtons"];
+    }
   }
 
 
   @override
   Widget build(BuildContext context) {
-    if (buttonColors.isEmpty) {
+    if (chartTypeButtonColors.isEmpty) { // Fill the typeButtonColors
+      List<String> Keys = widget.charts.keys.toList();
+      for (String chart in Keys) {
+        _setChartTypeButton(Keys.indexOf(chart), "normal");
+      }
+    }
+
+    if (chartTypeList.isEmpty) { // Fill the type Array
+      chartOptionContainerColor = Color(0xFF1F1F1F);
       for (String chart in widget.charts.keys) {
-        setState(() {
-          buttonColors[chart] = false;
-        });
+        chartTypeList.add(chart);
       }
     }
     print("Map filled");
+
+    //Calculate the crossAxisCount of the choices grid
+    maxCAC = (MediaQuery.of(context).size.width/400).floor();
+    print("CAC = " + widget.charts[chartTypeList[selectedTypeIndex]].keys.length.toString());
+    print("maxCAC = " + maxCAC.toString());
+    if (maxCAC <= widget.charts[chartTypeList[selectedTypeIndex]].keys.length) { CAC = maxCAC;}
+    else {print("setting CAC"); CAC = widget.charts[chartTypeList[selectedTypeIndex]].keys.length;}
+
+    print(widget.charts[chartTypeList[selectedTypeIndex]].keys);
+    print(widget.charts[chartTypeList[selectedTypeIndex]]);
 
     return Scaffold(
         appBar: AppBar(
@@ -100,42 +171,43 @@ class _ChartsPageState extends State<ChartsPage> {
         ),
         body: Container(
             color: Themes[activeTheme]!["background"],
-            child: Column(
+            child: Row(
               children: [
                 Container( // Selector Column
-                  // height: 200,
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
                         children: List.generate(widget.charts.keys.length, (index) {
                           return Expanded(
                               child: MouseRegion(
                                 child:GestureDetector(
                                   child: Container(
-                                    color: buttonColors[widget.charts.keys.indexed.elementAt(index).$2]! ? (Themes[activeTheme]!["chartTypeButtons_hover"]) : (Themes[activeTheme]!["chartTypeButtons"]),
-                                    child: Column(
+                                    color: chartTypeButtonColors[chartTypeList[index]]! ? (Themes[activeTheme]!["chartTypeButtons_hover"]) : (Themes[activeTheme]!["chartTypeButtons"]),
+                                    width: 30,
+                                    child: Row(
                                       children: [
                                         Container(
-                                            padding: EdgeInsets.all(2),
-                                            child: FittedBox(
-                                              fit: BoxFit.fitWidth,
-                                              child: Text(
-                                                widget.charts.keys.indexed.elementAt(index).$2,
-                                                textScaleFactor: 1.3,
-                                                style: TextStyle(fontWeight: FontWeight.bold, color: Themes[activeTheme]!["chartType_text"]),
-                                              ),
-                                            )
+                                            color: Themes[activeTheme]!["chartTypeUnderlineColors"]?.elementAt(index),
+                                            width: 5
                                         ),
                                         Container(
-                                            color: Themes[activeTheme]!["chartTypeUnderlineColors"]?.elementAt(index),
-                                            height: 5
-                                        )
+                                            padding: EdgeInsets.all(2),
+                                            child: Container(
+                                              child:VertText(
+                                              chartTypeList[index],
+                                              TextStyle(fontWeight: FontWeight.bold, color: Themes[activeTheme]!["chartType_text"]),
+                                            )
+                                          )
+                                        ),
+
                                       ],
                                     ),
                                   ),
-                                  onTap: () => _loadCharts(widget.charts.keys.indexed.elementAt(index).$2),
+                                  onTap: () => _loadCharts(chartTypeList[index]),
+                                  onTapDown: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
+                                  onTapUp: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
                                 ),
-                                onEnter: (s) => setState(() {buttonColors[widget.charts.keys.indexed.elementAt(index).$2] = true;}),
-                                onExit: (s) => setState(() {buttonColors[widget.charts.keys.indexed.elementAt(index).$2] = false;}),
+                                onEnter: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
+                                onExit: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
                               )
                           );
                         })

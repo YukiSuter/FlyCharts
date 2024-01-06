@@ -27,14 +27,13 @@ EG(airfield) async {
 
       for (var i = 0; i <= chartsTable.children[0].children.length/2; i++) {
         var container =  chartsTable.children[0].children[i].children[0].children[0];
-
+        print("localname:");
         print(container.localName);
 
         if (container.localName == "p") {
           var nextContainer = chartsTable.children[0].children[i + 1].children[0].children[0];
 
           var code = nextContainer.innerHtml.replaceAll("AD&nbsp;2." + airfield + "-","");
-
           print(code);
           
           var key = container.innerHtml;
@@ -44,37 +43,37 @@ EG(airfield) async {
 
           if (code[0].toString() == "5" || code[0].toString() == "3" || code[0].toString() == "4") {
             if (charts.containsKey("GEN") == false) {
-              charts.putIfAbsent("GEN", () => {"index": 0});
+              charts.putIfAbsent("GEN", () => {});
             } 
-            charts["GEN"]?.putIfAbsent(key, () => nextContainer.attributes["href"]);
+            charts["GEN"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
           }
 
           if (code[0].toString() == "2") {
             if (charts.containsKey("TAXI") == false) {
-              charts.putIfAbsent("TAXI", () => {"index": 1});
+              charts.putIfAbsent("TAXI", () => {});
             }
-            charts["TAXI"]?.putIfAbsent(key, () => nextContainer.attributes["href"]);
+            charts["TAXI"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
           }
 
           if (code[0].toString() == "6") {
             if (charts.containsKey("SID") == false) {
-              charts.putIfAbsent("SID", () => {"index": 2});
+              charts.putIfAbsent("SID", () => {});
             }
-            charts["SID"]?.putIfAbsent(key, () => nextContainer.attributes["href"]);
+            charts["SID"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
           }
 
           if (code[0].toString() == "7") {
             if (charts.containsKey("STAR") == false) {
-              charts.putIfAbsent("STAR", () => {"index": 3});
+              charts.putIfAbsent("STAR", () => {});
             }
-            charts["STAR"]?.putIfAbsent(key, () => nextContainer.attributes["href"]);
+            charts["STAR"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
           }
 
           if (code[0].toString() == "8") {
             if (charts.containsKey("APPR") == false) {
-              charts.putIfAbsent("APPR", () => {"index": 3});
+              charts.putIfAbsent("APPR", () => {});
             }
-            charts["APPR"]?.putIfAbsent(key, () => nextContainer.attributes["href"]);
+            charts["APPR"]?.putIfAbsent(key, () => {"detail": code, "link": nextContainer.attributes["href"]});
           }
 
 
