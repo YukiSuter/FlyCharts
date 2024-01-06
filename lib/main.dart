@@ -353,6 +353,9 @@ class _LaunchPageState extends State<LaunchPage> {
     showError = false;
     loading = true;
     setState(() {});
+
+    _userInput = _userInput.toUpperCase();
+
     if (_userInput != '') {
       for (var cc in cm.functionMap.entries) {
         print(_userInput.substring(0, cc.key.length));
