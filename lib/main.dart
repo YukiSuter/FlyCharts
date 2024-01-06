@@ -20,6 +20,7 @@ const Map<String, dynamic> Themes = {
     "chartType_text": Colors.white,
     "chartTypeUnderlineColors": [Colors.teal, Colors.deepOrangeAccent, Colors.blue, Colors.purple, Colors.amber],
     "chartsClose": Color(0xFF232323),
+    "chartsClose_hover": Color(0xFF262626),
     "chartChoice": Color(0xFF232323),
     "chartChoice_hover": Color(0xFF262626),
     "appBar": Color(0xFF131313),
@@ -106,6 +107,8 @@ class _ChartsPageState extends State<ChartsPage> {
   int selectedOptionIndex = 0;
   bool choicesActive = false;
   bool selectedActive = false;
+
+  Color chartsCloseColor = Themes[activeTheme]["chartsClose"];
 
   int maxCAC = 1;
   int CAC = 1;
@@ -300,12 +303,21 @@ class _ChartsPageState extends State<ChartsPage> {
                     },
                   )
                 ),
-                Container(
-                  width: 30,
-                  height: MediaQuery.of(context).size.height,
-                  padding: EdgeInsets.all(5),
-                  color: Themes[activeTheme]!["chartsClose"],
-                  child: Icon(Icons.arrow_back_ios_new),
+                MouseRegion(
+                  child: GestureDetector(
+                    child:Container(
+                      width: 30,
+                      height: MediaQuery.of(context).size.height,
+                      padding: EdgeInsets.all(5),
+                      color: chartsCloseColor,
+                      child: Icon(Icons.arrow_back_ios_new),
+                    ),
+                    onTap: () => print("Hi"),
+                    onTapDown: (s) => setState(() {chartsCloseColor = Themes[activeTheme]["chartsClose_hover"];}),
+                    onTapUp: (s) => setState(() {chartsCloseColor = Themes[activeTheme]["chartsClose"];}),
+                  ),
+                  onEnter: (s) => setState(() {chartsCloseColor = Themes[activeTheme]["chartsClose_hover"];}),
+                  onExit: (s) => setState(() {chartsCloseColor = Themes[activeTheme]["chartsClose"];}),
                 ),
                 Expanded(
                   child: Container(
