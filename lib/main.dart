@@ -19,8 +19,9 @@ const Map<String, dynamic> Themes = {
     "chartTypeButtons": Color(0xFF232323),
     "chartType_text": Colors.white,
     "chartTypeUnderlineColors": [Colors.teal, Colors.deepOrangeAccent, Colors.blue, Colors.purple, Colors.amber],
-    "chartChoiceBox": Color(0xFF262626),
-    "chartChoiceBox_hover": Color(0xFF1F1F1F),
+    "chartsClose": Color(0xFF232323),
+    "chartChoice": Color(0xFF232323),
+    "chartChoice_hover": Color(0xFF262626),
     "appBar": Color(0xFF131313),
     "appBar_text": Colors.white,
     "background": Color(0xFF282828),
@@ -97,10 +98,14 @@ class ChartsPage extends StatefulWidget {
 
 class _ChartsPageState extends State<ChartsPage> {
   Map<String, Color> chartTypeButtonColors = {};
-  Map<String, bool> chartOptionButtonColors = {};
+  Map<String, Color> chartOptionButtonColors = {};
   late Color chartOptionContainerColor;
   List<String> chartTypeList = [];
   int selectedTypeIndex = 0;
+  List<String> chartOptionList = [];
+  int selectedOptionIndex = 0;
+  bool choicesActive = false;
+  bool selectedActive = false;
 
   int maxCAC = 1;
   int CAC = 1;
@@ -109,18 +114,42 @@ class _ChartsPageState extends State<ChartsPage> {
     print("Showing: " + chartType);
     print(chartTypeButtonColors);
     selectedTypeIndex = chartTypeList.indexOf(chartType);
+    chartOptionContainerColor = Themes[activeTheme]!["chartTypeUnderlineColors"][selectedTypeIndex];
     print(Themes[activeTheme]!["chartTypeUnderlineColors"][selectedTypeIndex]);
+
+    choicesActive = true;
+
+    chartOptionButtonColors = {};
+    chartOptionList = [];
+
+    for (String option in widget.charts[chartTypeList[selectedTypeIndex]].keys) {
+      print("Adding: " + option);
+      chartOptionList.add(option);
+      _setChartOptionButton(chartOptionList.indexOf(option), "normal");
+    }
+
+    print(chartOptionList);
 
     for (String type in chartTypeList) {
       if (type == chartType) {
-        chartTypeButtonColors[type] = Themes[activeTheme]!["chartTypeUnderlineColors"][selectedTypeIndex];
+        _setChartTypeButton(chartTypeList.indexOf(type), "active");
       } else {
-        chartTypeButtonColors[type] = Themes[activeTheme]!["chartTypeButtons"];
+        _setChartTypeButton(chartTypeList.indexOf(type), "normal");
       }
     }
     setState(() {
 
     });
+  }
+
+  Future<void> _setChartOptionButton(index, status) async {
+    if (status == "hover") {
+      chartOptionButtonColors[chartOptionList[index]] = Themes[activeTheme]!["chartChoice_hover"];
+    } if (status == "active") {
+      chartOptionButtonColors[chartOptionList[index]] = Themes[activeTheme]!["chartTypeUnderlineColors"][selectedTypeIndex];
+    } if (status == "normal") {
+      chartOptionButtonColors[chartOptionList[index]] = Themes[activeTheme]!["chartChoice"];
+    }
   }
 
   Future<void> _setChartTypeButton(index, status) async {
@@ -136,12 +165,6 @@ class _ChartsPageState extends State<ChartsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (chartTypeButtonColors.isEmpty) { // Fill the typeButtonColors
-      List<String> Keys = widget.charts.keys.toList();
-      for (String chart in Keys) {
-        _setChartTypeButton(Keys.indexOf(chart), "normal");
-      }
-    }
 
     if (chartTypeList.isEmpty) { // Fill the type Array
       chartOptionContainerColor = Color(0xFF1F1F1F);
@@ -149,6 +172,14 @@ class _ChartsPageState extends State<ChartsPage> {
         chartTypeList.add(chart);
       }
     }
+
+    if (chartTypeButtonColors.isEmpty) { // Fill the typeButtonColors
+      List<String> Keys = widget.charts.keys.toList();
+      for (String type in Keys) {
+        _setChartTypeButton(Keys.indexOf(type), "normal");
+      }
+    }
+
     print("Map filled");
 
     //Calculate the crossAxisCount of the choices grid
@@ -181,7 +212,7 @@ class _ChartsPageState extends State<ChartsPage> {
                               child: MouseRegion(
                                 child:GestureDetector(
                                   child: Container(
-                                    color: chartTypeButtonColors[chartTypeList[index]]! ? (Themes[activeTheme]!["chartTypeButtons_hover"]) : (Themes[activeTheme]!["chartTypeButtons"]),
+                                    color: chartTypeButtonColors[chartTypeList[index]],
                                     width: 30,
                                     child: Row(
                                       children: [
@@ -203,15 +234,78 @@ class _ChartsPageState extends State<ChartsPage> {
                                     ),
                                   ),
                                   onTap: () => _loadCharts(chartTypeList[index]),
-                                  onTapDown: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
-                                  onTapUp: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
+                                  onTapDown: (s) => setState(() {if (selectedTypeIndex != index) {_setChartTypeButton(index, "normal");}}),
+                                  onTapUp: (s) => setState(() {if (selectedTypeIndex != index) {_setChartTypeButton(index, "hover");}}),
                                 ),
-                                onEnter: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
-                                onExit: (s) => setState(() {if (selectedTypeIndex != index) {chartTypeButtonColors[chartTypeList[index]] =true;}}),
+                                onEnter: (s) => setState(() {if (selectedTypeIndex != index) {_setChartTypeButton(index, "hover");}}),
+                                onExit: (s) => setState(() {if (selectedTypeIndex != index) {_setChartTypeButton(index, "normal");}}),
                               )
                           );
                         })
                     )
+                ),
+                Container(
+                  width: 300,
+                  height: MediaQuery.of(context).size.height,
+                  padding: EdgeInsets.all(3),
+                  color: chartOptionContainerColor,
+                  child: Builder(
+                    builder: (context) {
+                      if (!choicesActive) {
+                        return Container(
+                          padding: EdgeInsets.all(7),
+                          child: Text("No chart type selected! Please choose from the column on the left."),
+                          alignment: Alignment.center,
+                        );
+                      } else {
+                        return Container(
+                          color: Themes[activeTheme]["background"],
+                          width: double.infinity,
+                          height: double.infinity,
+                          child: ListView.separated(
+                            padding: EdgeInsets.all(5),
+                            scrollDirection: Axis.vertical,
+                            itemCount: chartOptionList.length,
+                            separatorBuilder: (BuildContext context, int index) => const Divider(),
+                            itemBuilder: (BuildContext context, int index) {
+                              return MouseRegion(
+                                child: GestureDetector(
+                                  child: Container(
+                                    color: chartOptionButtonColors[chartOptionList[index]],
+                                    padding: EdgeInsets.all(5),
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          chartOptionList[index],
+                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          widget.charts[chartTypeList[selectedTypeIndex]][chartOptionList[index]]["detail"]
+                                        )
+                                      ],
+                                    )
+                                  ),
+                                  // onTap: () => _loadCharts(chartTypeList[index]),
+                                  onTapDown: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "normal");}}),
+                                  onTapUp: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "hover");}}),
+                                ),
+                                onEnter: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "hover");}}),
+                                onExit: (s) => setState(() {if (selectedOptionIndex != index) {_setChartOptionButton(index, "normal");}}),
+                              );
+                            }
+                          ),
+                        );
+                      }
+                    },
+                  )
+                ),
+                Container(
+                  width: 30,
+                  height: MediaQuery.of(context).size.height,
+                  padding: EdgeInsets.all(5),
+                  color: Themes[activeTheme]!["chartsClose"],
+                  child: Icon(Icons.arrow_back_ios_new),
                 ),
                 Expanded(
                   child: Container(
