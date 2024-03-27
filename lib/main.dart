@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:js_interop';
 import 'dart:typed_data';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 import 'package:http/http.dart' as http;
@@ -28,8 +30,13 @@ const Map<String, dynamic> Themes = {
     "chartsClose_hover": Color(0xFF262626),
     "chartChoice": Color(0xFF232323),
     "chartChoice_hover": Color(0xFF262626),
-    "appBar": Color(0xFF131313),
+    "accent": Color.fromARGB(255, 0, 150, 136),
+    "appBarPrimary": Color.fromARGB(255, 0, 45, 105),
+    "appBarSecondary": Color.fromARGB(255, 17, 83, 83),
     "appBar_text": Colors.white,
+    "searchBar_text": Color.fromARGB(255, 255, 255, 255),
+    "searchBar_background": Color.fromARGB(255, 58, 58, 58),
+    "searchBar_border": Color.fromARGB(255, 43, 43, 43),
     "background": Color(0xFF282828),
     "brightness": Brightness.dark,
   }
@@ -494,102 +501,254 @@ class _LaunchPageState extends State<LaunchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Themes[activeTheme]!["appBar"],
-          title: Text(
-            'FlyCharts',
-            style: TextStyle(color: Themes[activeTheme]!["appBar_text"]),
-          ),
-        ),
         body: Container(
           color: Themes[activeTheme]!["background"],
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    'Welcome to FlyCharts! Please enter the ICAO for the airport you want charts for, below!',
-
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.visible,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    softWrap: true,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: SizedBox(
-                    width: 200.0,
-                    height: 75.0,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter ICAO',
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _userInput = value;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-
-                Padding(
-                    padding: EdgeInsets.all(0),
-                    child: SizedBox(
-                        width: 200.0,
-                        height: 50,
-
-                        child: OutlinedButton(
-                          onPressed: search,
-                          child:  switch (loading) {
-                            true => LoadingAnimationWidget.twoRotatingArc(
-                              color: Colors.teal,
-                              size: 20,
-                            ),
-                            false => Text("Show Charts"),
-                          },
-                        )
-                    )
-                ),
-                Visibility(
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      errorMessage,
-
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.visible,
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-                      softWrap: true,
-
-                    ),
-                  ),
-                  visible: showError,
-                ),
-                // Padding(
-                //     padding: EdgeInsets.all(10),
-                //     child: GestureDetector(
-                //       onTap: _launchURL {"https://gi"},
-                //       child: Image(
-                //           width: 300.0,
-                //           height: 50,
-                //           image: AssetImage('assets/GitHub_Logo.png'),
-                //       ),
-                //     )
-                //
-                //
-                //
-                // ),
-
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(15), 
+                        child:SearchBar()
+                      )
+                    ]
+                  )
+                )
+              ),
+              BottomNavBarFb2()
               ],
-            ),
-          ),
+            )
         )
 
     );
+  }
+}
+
+class BottomNavBarFb2 extends StatelessWidget {
+  const BottomNavBarFb2({Key? key}) : super(key: key);
+
+  final primaryColor = const Color(0xff4338CA);
+  final secondaryColor = const Color(0xff6D28D9);
+  final accentColor = const Color(0xffffffff);
+  final backgroundColor = const Color(0xffffffff);
+  final errorColor = const Color(0xffEF4444);
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+        color: Colors.white,
+        child: SizedBox(
+          height: 56,
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconBottomBar(
+                    text: "Home",
+                    icon: Icons.home,
+                    selected: true,
+                    onPressed: () {}),
+                IconBottomBar(
+                    text: "Search",
+                    icon: Icons.search_outlined,
+                    selected: false,
+                    onPressed: () {}),
+                IconBottomBar(
+                    text: "Cart",
+                    icon: Icons.local_grocery_store_outlined,
+                    selected: false,
+                    onPressed: () {}),
+                IconBottomBar(
+                    text: "Calendar",
+                    icon: Icons.date_range_outlined,
+                    selected: false,
+                    onPressed: () {})
+              ],
+            ),
+          ),
+        ),
+    );
+  }
+}
+
+class IconBottomBar extends StatelessWidget {
+  const IconBottomBar(
+      {Key? key,
+      required this.text,
+      required this.icon,
+      required this.selected,
+      required this.onPressed})
+      : super(key: key);
+  final String text;
+  final IconData icon;
+  final bool selected;
+  final Function() onPressed;
+
+ final primaryColor = const Color(0xff4338CA);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: onPressed,
+          icon: Icon(
+            icon,
+            size: 25,
+            color: selected ? primaryColor : Colors.black54,
+          ),
+        ),
+         Text(
+          text,
+          style: TextStyle(
+              fontSize: 12,
+              height: .1,
+              color: selected
+                  ? primaryColor
+                  : Colors.grey.withOpacity(.75)),
+        )
+      ],
+    );
+  }
+}
+
+
+class FadeAppBarTutorial extends StatefulWidget {
+  const FadeAppBarTutorial({Key? key}) : super(key: key);
+
+  @override
+  State<FadeAppBarTutorial> createState() => _FadeAppBarTutorialState();
+}
+
+class _FadeAppBarTutorialState extends State<FadeAppBarTutorial> {
+  late ScrollController _scrollController;
+  double _scrollControllerOffset = 0.0;
+
+  _scrollListener() {
+    setState(() {
+      _scrollControllerOffset = _scrollController.offset;
+    });
+  }
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Color(0xff123456),
+        body: Container(
+          // Place as the child widget of a scaffold
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(
+                  "https://firebasestorage.googleapis.com/v0/b/flutterbricks-public.appspot.com/o/backgrounds%2Fdave-hoefler-PEkfSAxeplg-unsplash.jpg?alt=media&token=8b7e1d44-a52f-49f9-a3ae-e542cca0f368"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Stack(
+            children: [
+              CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverToBoxAdapter(
+                      child: Container(
+                    height: MediaQuery.of(context).size.height * 1.5,
+                    child: Center(
+                        child: Text(
+                      "🚀",
+                      style: TextStyle(
+                          color: Themes[activeTheme]!["searchBar_text"],
+                          fontSize: 75,
+                          fontWeight: FontWeight.bold),
+                    )),
+                  ))
+                ],
+              ),
+              PreferredSize(
+                  child: FadeAppBar(scrollOffset: _scrollControllerOffset),
+                  preferredSize: Size(MediaQuery.of(context).size.width, 20.0))
+            ],
+          ), // Place child here
+        ));
+  }
+}
+
+class FadeAppBar extends StatelessWidget {
+  final double scrollOffset;
+  const FadeAppBar({Key? key, required this.scrollOffset}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+        top: false,
+        child: Container(
+          height: 100,
+          padding: const EdgeInsets.symmetric(
+            vertical: 10.0,
+            horizontal: 24.0,
+          ),
+          color: Colors.white
+              .withOpacity((scrollOffset / 350).clamp(0, 1).toDouble()),
+          child: SafeArea(child: SearchInput()),
+        ));
+  }
+}
+
+class SearchInput extends StatelessWidget {
+  const SearchInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 50,
+        decoration: BoxDecoration(boxShadow: [
+          BoxShadow(
+              offset: const Offset(12, 26),
+              blurRadius: 50,
+              spreadRadius: 0,
+              color: Colors.grey.withOpacity(.1)),
+        ]),
+        child: TextField(
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14),
+          decoration: InputDecoration(
+            // prefixIcon: Icon(Icons.email),
+            prefixIcon: Icon(Icons.search, size: 20, color: Themes[activeTheme]!["accent"]),
+            filled: true,
+            fillColor: Themes[activeTheme]!["searchBar_background"],
+            hintText: 'Search by ICAO',
+            hintStyle: TextStyle(color: Themes[activeTheme]!["searchBar_text"].withOpacity(.75)),
+            contentPadding:
+                EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Themes[activeTheme]!["searchBar_border"], width: 1.0),
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Themes[activeTheme]!["searchBar_border"], width: 2.0),
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+            ),
+          ),
+          onChanged: (value) {
+            
+          },
+        ));
   }
 }
