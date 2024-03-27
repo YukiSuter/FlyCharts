@@ -48,9 +48,7 @@ EG(airfield) async {
               charts.putIfAbsent("GEN", () => {});
             }
 
-            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
-
-            charts["GEN"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
+            charts["GEN"]?.putIfAbsent(key, () => {"detail": code, "link": eAIP + "/../" + nextContainer.attributes["href"]!});
           }
 
           if (code[0].toString() == "2") {
@@ -58,9 +56,7 @@ EG(airfield) async {
               charts.putIfAbsent("TAXI", () => {});
             }
 
-            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
-
-            charts["TAXI"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
+            charts["TAXI"]?.putIfAbsent(key, () => {"detail": code, "link": eAIP + "/../" + nextContainer.attributes["href"]!});
           }
 
           if (code[0].toString() == "6") {
@@ -68,9 +64,7 @@ EG(airfield) async {
               charts.putIfAbsent("SID", () => {});
             }
 
-            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
-
-            charts["SID"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
+            charts["SID"]?.putIfAbsent(key, () => {"detail": code, "link": eAIP + "/../" + nextContainer.attributes["href"]!});
           }
 
           if (code[0].toString() == "7") {
@@ -78,9 +72,7 @@ EG(airfield) async {
               charts.putIfAbsent("STAR", () => {});
             }
 
-            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
-
-            charts["STAR"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
+            charts["STAR"]?.putIfAbsent(key, () => {"detail": code, "link": eAIP + "/../" + nextContainer.attributes["href"]!});
           }
 
           if (code[0].toString() == "8") {
@@ -88,9 +80,7 @@ EG(airfield) async {
               charts.putIfAbsent("APPR", () => {});
             }
 
-            String link = nextContainer.attributes["href"]!.replaceAll("../../", "");
-
-            charts["APPR"]?.putIfAbsent(key, () => {"detail": code, "link": file_root + link});
+            charts["APPR"]?.putIfAbsent(key, () => {"detail": code, "link": eAIP + "/../" + nextContainer.attributes["href"]!});
           }
 
 
