@@ -1,4 +1,4 @@
-package dev.ycsuter.flycharts.flycharts
+package com.example.flycharts
 
 import io.flutter.embedding.android.FlutterActivity
 
