@@ -13,10 +13,14 @@ class cardButton extends StatelessWidget {
       required this.width,
       required this.textScaleFactor,
       required this.iconSize,
+      required this.textColor,
+      required this.iconColor,
       super.key});
 
   final Color backgroundColor;
   final Color borderColor;
+  final Color textColor;
+  final Color iconColor;
   final double borderRadius;
   final String text;
   final IconData icon;
@@ -39,11 +43,16 @@ class cardButton extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Icon(icon, size: iconSize),
+            Icon(
+              icon,
+              size: iconSize,
+              color: iconColor,
+            ),
             Text(
               text,
               textScaler: TextScaler.linear(textScaleFactor),
               textAlign: TextAlign.center,
+              style: TextStyle(color: textColor),
             )
           ],
         ),
