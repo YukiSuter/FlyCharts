@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flycharts/pages/chartSearch.dart';
+import 'package:flycharts/scaling.dart';
 import 'package:flycharts/widgets/bottomBar.dart';
 import 'package:flycharts/widgets/cardButton.dart';
 import 'package:flycharts/widgets/sideBar.dart';
@@ -9,22 +10,23 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double calcSF = scaleFactor(context);
+
     return Scaffold(
       body: Padding(
-        padding:
-            const EdgeInsets.only(top: 60, bottom: 60, left: 60, right: 60),
+        padding: EdgeInsets.all(60 * calcSF),
         child: Center(
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding: EdgeInsets.all(15.0 * calcSF),
                 child: Text(
                   "Welcome to FlyCharts!",
-                  textScaler: TextScaler.linear(4),
+                  textScaler: TextScaler.linear(4 * calcSF),
                 ),
               ),
               Container(
-                width: 800,
+                width: 800 * calcSF,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   border:
@@ -32,29 +34,29 @@ class HomePage extends StatelessWidget {
                   color: Color.fromARGB(255, 246, 246, 246),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(50),
+                  padding: EdgeInsets.all(50 * calcSF),
                   child: Column(
                     children: [
                       Text(
                         "Getting Started",
-                        textScaler: TextScaler.linear(2),
+                        textScaler: TextScaler.linear(2 * calcSF),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Padding(
-                            padding: EdgeInsets.all(30),
+                            padding: EdgeInsets.all(30 * calcSF),
                             child: cardButton(
                                 backgroundColor:
                                     const Color.fromARGB(255, 255, 255, 255),
                                 borderColor: const Color.fromARGB(255, 0, 0, 0),
-                                borderRadius: 5,
+                                borderRadius: 5 * calcSF,
                                 text: "Create New Flightplan",
-                                height: 200,
-                                width: 150,
+                                height: 200 * calcSF,
+                                width: 150 * calcSF,
                                 icon: Icons.add,
-                                textScaleFactor: 1.3,
-                                iconSize: 60),
+                                textScaleFactor: 1.3 * calcSF,
+                                iconSize: 60 * calcSF),
                           ),
                           Padding(
                             padding: EdgeInsets.all(30),
@@ -62,13 +64,13 @@ class HomePage extends StatelessWidget {
                                 backgroundColor:
                                     const Color.fromARGB(255, 255, 255, 255),
                                 borderColor: const Color.fromARGB(255, 0, 0, 0),
-                                borderRadius: 5,
+                                borderRadius: 5 * calcSF,
                                 text: "Load Simbrief Flightplan",
-                                height: 200,
-                                width: 150,
+                                height: 200 * calcSF,
+                                width: 150 * calcSF,
                                 icon: Icons.file_copy,
-                                textScaleFactor: 1.3,
-                                iconSize: 60),
+                                textScaleFactor: 1.3 * calcSF,
+                                iconSize: 60 * calcSF),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -78,19 +80,19 @@ class HomePage extends StatelessWidget {
                                       builder: (context) => chartSearch()));
                             },
                             child: Padding(
-                              padding: EdgeInsets.all(30),
+                              padding: EdgeInsets.all(30 * calcSF),
                               child: cardButton(
                                   backgroundColor:
                                       const Color.fromARGB(255, 255, 255, 255),
                                   borderColor:
                                       const Color.fromARGB(255, 0, 0, 0),
-                                  borderRadius: 5,
+                                  borderRadius: 5 * calcSF,
                                   text: "Charts by ICAO",
-                                  height: 200,
-                                  width: 150,
+                                  height: 200 * calcSF,
+                                  width: 150 * calcSF,
                                   icon: Icons.map,
-                                  textScaleFactor: 1.3,
-                                  iconSize: 60),
+                                  textScaleFactor: 1.3 * calcSF,
+                                  iconSize: 60 * calcSF),
                             ),
                           )
                         ],

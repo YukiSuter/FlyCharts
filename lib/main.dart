@@ -29,7 +29,9 @@ class MyApp extends StatelessWidget {
                   ),
                   Expanded(
                     child: MaterialApp(
-                        navigatorKey: navigatorKey, home: HomePage()),
+                      navigatorKey: navigatorKey,
+                      home: HomePage(),
+                    ),
                   ),
                 ],
               ),
