@@ -17,6 +17,7 @@ class _bottomBarState extends State<bottomBar> {
         child: Text(
           "NO FLIGHT PLAN LOADED",
           textAlign: TextAlign.center,
+          textScaler: TextScaler.linear(0.2),
         ));
   }
 }

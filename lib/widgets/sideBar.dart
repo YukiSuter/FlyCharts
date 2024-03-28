@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flycharts/pages/home.dart';
 
 class sideBar extends StatefulWidget {
-  const sideBar({super.key});
+  const sideBar({super.key, required this.navKey});
 
+  final GlobalKey<NavigatorState> navKey;
   @override
   State<sideBar> createState() => _sideBarState();
 }
@@ -37,7 +39,10 @@ class _sideBarState extends State<sideBar> {
               Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.navKey.currentState!.push(
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                    },
                     icon: Icon(
                       Icons.home,
                       color: const Color.fromARGB(255, 48, 48, 48),

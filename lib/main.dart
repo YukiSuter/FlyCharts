@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flycharts/pages/home.dart';
+import 'package:flycharts/widgets/bottomBar.dart';
+import 'package:flycharts/widgets/sideBar.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   // This widget is the root of your application.
   @override
@@ -14,7 +18,26 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'Poppins'),
-      home: HomePage(),
+      home: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  sideBar(
+                    navKey: navigatorKey,
+                  ),
+                  Expanded(
+                    child: MaterialApp(
+                        navigatorKey: navigatorKey, home: HomePage()),
+                  ),
+                ],
+              ),
+            ),
+            bottomBar()
+          ],
+        ),
+      ),
     );
   }
 }
