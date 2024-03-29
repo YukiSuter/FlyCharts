@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 String defaultTheme = "dark";
 
-Map<String, Map<String, Color>> Themes = {
+Map<String, Map<String, dynamic>> Themes = {
   "light": {
     'background': Color.fromARGB(255, 255, 255, 255),
     'secondaryBackground': Color.fromARGB(255, 246, 246, 246),
@@ -11,6 +11,13 @@ Map<String, Map<String, Color>> Themes = {
     'border': Color.fromARGB(255, 0, 0, 0),
     'text': Colors.black,
     'sideBarButtons': Color.fromARGB(255, 48, 48, 48),
+    "chartTypeUnderlineColors": [
+      Colors.teal,
+      Colors.deepOrangeAccent,
+      Colors.blue,
+      Colors.purple,
+      Colors.amber
+    ],
   },
   "dark": {
     'background': Color(0xFF282828),
@@ -19,10 +26,23 @@ Map<String, Map<String, Color>> Themes = {
     'border': Color.fromARGB(255, 255, 255, 255),
     'text': Colors.white,
     'sideBarButtons': Color.fromARGB(255, 207, 207, 207),
+    "chartTypeUnderlineColors": [
+      Colors.teal,
+      Colors.deepOrangeAccent,
+      Colors.blue,
+      Colors.purple,
+      Colors.amber
+    ],
+    "chartsClose": Color(0xFF232323),
+    "chartsClose_hover": Color(0xFF262626),
+    "chartChoice": Color(0xFF232323),
+    "chartChoice_hover": Color(0xFF262626),
+    "chartTypeButtons_hover": Color(0xFF262626),
+    "chartTypeButtons": Color(0xFF232323),
   },
 };
 
-Color? activeTheme(SharedPreferences prefs, String themeOption) {
+dynamic? activeTheme(SharedPreferences prefs, String themeOption) {
   String? active = prefs.getString('activeTheme');
 
   active ??= defaultTheme;

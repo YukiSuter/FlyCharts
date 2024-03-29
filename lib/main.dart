@@ -21,7 +21,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'Poppins'),
+      theme: ThemeData(
+        fontFamily: 'Poppins',
+        colorScheme: ColorScheme(
+          brightness: Brightness.dark,
+          primary: Colors.teal,
+          onPrimary: Colors.black,
+          secondary: Colors.blueGrey,
+          onSecondary: Colors.black,
+          error: Colors.red,
+          onError: Colors.black,
+          surface: Colors.grey,
+          onSurface: Colors.black,
+        ),
+      ),
       home: FutureBuilder(
         future: _prefsFuture,
         builder: (context, snapshot) {
