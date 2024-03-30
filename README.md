@@ -1,6 +1,6 @@
 # flycharts
 
-An open source prgram to view the aviation charts for different aerodromes.
+A new Flutter project.
 
 ## Getting Started
 
