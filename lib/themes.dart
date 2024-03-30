@@ -5,6 +5,7 @@ String defaultTheme = "dark";
 
 Map<String, Map<String, dynamic>> Themes = {
   "light": {
+    'is_dark': false,
     'background': Color.fromARGB(255, 255, 255, 255),
     'secondaryBackground': Color.fromARGB(255, 246, 246, 246),
     'tertiaryBackground': Color(0xffE7E7E7),
@@ -20,6 +21,7 @@ Map<String, Map<String, dynamic>> Themes = {
     ],
   },
   "dark": {
+    'is_dark': true,
     'background': Color(0xFF282828),
     'secondaryBackground': Color(0xFF131313),
     'tertiaryBackground': Color(0xFF232323),

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flycharts/pages/chartSearch.dart';
 import 'package:flycharts/pages/home.dart';
+import 'package:flycharts/pages/settingsPage.dart';
 import 'package:flycharts/themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class sideBar extends StatefulWidget {
-  const sideBar({super.key, required this.navKey});
+  const sideBar({super.key, required this.navKey, required this.oNavKey});
 
   final GlobalKey<NavigatorState> navKey;
+  final GlobalKey<NavigatorState> oNavKey;
   @override
   State<sideBar> createState() => _sideBarState();
 }
@@ -17,9 +20,7 @@ class _sideBarState extends State<sideBar> {
       SharedPreferences.getInstance().then((v) => _prefs = v);
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return FutureBuilder(
       future: _prefsFuture,
       builder: (context, snapshot) {
@@ -76,7 +77,10 @@ class _sideBarState extends State<sideBar> {
                     Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            widget.navKey.currentState!.push(MaterialPageRoute(
+                                builder: (context) => chartSearch()));
+                          },
                           icon: Icon(
                             Icons.search,
                             color: activeTheme(_prefs!, "sideBarButtons")!,
@@ -87,7 +91,11 @@ class _sideBarState extends State<sideBar> {
                     Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            widget.navKey.currentState!.push(MaterialPageRoute(
+                                builder: (context) =>
+                                    settingsPage(oNavKey: widget.oNavKey)));
+                          },
                           icon: Icon(
                             Icons.settings,
                             color: activeTheme(_prefs!, "sideBarButtons")!,
