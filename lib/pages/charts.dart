@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flycharts/settings.dart';
 import 'package:flycharts/themes.dart';
 import 'package:flycharts/widgets/vertText.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,24 +43,16 @@ class _ChartsPageState extends State<ChartsPage> {
 
   String tempPath = "";
 
-  var pdfPinchController = PdfControllerPinch(
-    document: PdfDocument.openAsset('assets/sample.pdf'),
-  );
-
-  var pdfController = PdfController(
-    document: PdfDocument.openAsset('assets/sample.pdf'),
-  );
+  var pdfPinchController;
+  var pdfController;
 
   int maxCAC = 1;
   int CAC = 1;
 
   Future<void> _loadCharts(chartType) async {
-    print("Showing: " + chartType);
-    print(chartTypeButtonColors);
     selectedTypeIndex = chartTypeList.indexOf(chartType);
     chartOptionContainerColor =
         activeTheme(_prefs!, "chartTypeUnderlineColors")![selectedTypeIndex];
-    print(activeTheme(_prefs!, "chartTypeUnderlineColors")![selectedTypeIndex]);
 
     choicesActive = true;
 
@@ -68,12 +61,9 @@ class _ChartsPageState extends State<ChartsPage> {
 
     for (String option
         in widget.charts[chartTypeList[selectedTypeIndex]].keys) {
-      print("Adding: " + option);
       chartOptionList.add(option);
       _setChartOptionButton(chartOptionList.indexOf(option), "normal");
     }
-
-    print(chartOptionList);
 
     for (String type in chartTypeList) {
       if (type == chartType) {
@@ -92,33 +82,12 @@ class _ChartsPageState extends State<ChartsPage> {
   }
 
   Future<void> _setPDF(link) async {
-    //
-    // Directory tempDir = await getTemporaryDirectory();
-    // final dirExists = await tempDir.exists();
-    // if (!dirExists) {
-    //   await tempDir.create();
-    // }
-    //
-    // String tempPath = tempDir.path;
-    //
-    // final pdfFile = File('$tempPath/tempchart.pdf');
-    //
-    //
-    // final pdfResponse = await http.get(Uri.parse(link));
-    //
-    //
-    // await pdfFile.writeAsBytes(pdfResponse.bodyBytes);
-
     if (Platform.isIOS || Platform.isAndroid) {
       pdfPinchController
           .loadDocument(PdfDocument.openData(InternetFile.get(link)));
     } else {
       pdfController.loadDocument(PdfDocument.openData(InternetFile.get(link)));
     }
-
-    // setState(() {
-    //
-    // });
   }
 
   Future<void> _setChartOptionButton(index, status) async {
@@ -155,6 +124,16 @@ class _ChartsPageState extends State<ChartsPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (getSettingValue(_prefs!, "pdfViewer", String) == "built-in") {
+      var pdfPinchController = PdfControllerPinch(
+        document: PdfDocument.openAsset('assets/sample.pdf'),
+      );
+
+      var pdfController = PdfController(
+        document: PdfDocument.openAsset('assets/sample.pdf'),
+      );
+    }
+
     print("Loading chartsPage");
     return FutureBuilder(
       future: _prefsFuture,
