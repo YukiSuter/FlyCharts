@@ -1,16 +1,12 @@
-# flycharts
+# FlyCharts
 
-A new Flutter project.
+Welcome to FlyCharts!
+
+This program aims to simplify the sourcing of aviation charts from various agencies.
+The goal is for this program to be the Electronic Flight Bag (EFB) flight simulator users have been waiting for!
+
+THIS PROGRAM IS FOR FLIGHT SIMULATION/AVIATION ENTHUSIAST USE ONLY AND MUST NOT BE USED FOR REAL WORLD NAVIGATION.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This project uses Flutter! The aim is to build a program that be compiled for many different devices/formats. 
